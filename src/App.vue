@@ -5,6 +5,12 @@
 </script>
 
 <style>
+@font-face {
+  font-family: "ShadowsIntoLight";
+  src: local("ShadowsIntoLight-Regular"),
+    url(@/assets/ShadowsIntoLight.ttf) format("truetype");
+}
+
 html {
   height: 100vh;
   scroll-behavior: smooth;
