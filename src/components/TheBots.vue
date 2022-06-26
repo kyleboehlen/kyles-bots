@@ -17,11 +17,14 @@ import { defineProps, ref } from "vue"
 // Components
 import BotCard from "@/components/BotCard.vue"
 
+// We pass bots so that we can make the api call before this component is loaded while the header animation is playing
 const props = defineProps(["bots"])
+
+// Reactive index for which card is flipped on mobile
 const flipTriggerIndex = ref(0)
 
+// Update the index of the flipped card when the card emits it, passes to the other cards
 const updateFlipTriggerIndex = (newIndex) => {
-  console.log(newIndex)
   flipTriggerIndex.value = newIndex
 }
 </script>
@@ -36,16 +39,6 @@ const updateFlipTriggerIndex = (newIndex) => {
   justify-content: space-evenly;
   padding-bottom: 10vh;
   width: 100%;
-}
-
-.botcard-enter-active,
-.botcard-leave-active {
-  transition: all 10s ease;
-}
-.botcard-enter-from,
-.botcard-leave-to {
-  opacity: 0;
-  transition-delay: calc(5s * (var(--total) - var(--i)));
 }
 
 @media only screen and (max-width: 1050px) {

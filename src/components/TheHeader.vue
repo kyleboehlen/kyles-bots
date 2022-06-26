@@ -87,10 +87,10 @@ h2 {
 h1 {
   font-family: ShadowsIntoLight;
   font-size: 5rem;
+  margin-bottom: 2vh;
+  margin-left: 1vw;
   overflow: hidden;
   white-space: nowrap;
-  margin-left: 1vw;
-  margin-bottom: 2vh;
 }
 
 /* PORTFOLIO LINK */

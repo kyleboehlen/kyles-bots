@@ -20,7 +20,7 @@
         <div class="flip-card-back">
           <p class="name">{{ props.bot.name }}</p>
           <p class="desc">{{ props.bot.desc }}</p>
-          <button>Add Bot</button>
+          <button @click="addBot">Add Bot</button>
         </div>
       </div>
     </div>
@@ -31,20 +31,22 @@
 import {
   defineProps,
   inject,
-  getCurrentInstance,
   computed,
   ref,
+  getCurrentInstance,
   defineEmits,
 } from "vue"
 
-const index = getCurrentInstance().vnode.key
-
-const assetUrl = import.meta.env.VITE_ASSET_URL
-
+// Get the bot details, the total number of bots, and the index of which bot card is flipped on mobile
 const props = defineProps(["bot", "total", "flipTriggerIndex"])
 
+// Asset url for s3 bucket
+const assetUrl = import.meta.env.VITE_ASSET_URL
+
+// For staggering the fade in animation until the rest has shown
 const show = inject("show")
 
+// Calculating width of card depending on how many bots there are (for desktop)
 const height = computed(() => {
   const maxHeight = 80 / props.total
   if (maxHeight > 27.5) {
@@ -53,28 +55,49 @@ const height = computed(() => {
   return maxHeight
 })
 
-// Handle mobile click trigger
+// Refs for handling mobile card flipping
 const flipTriggerTimeout = ref(true)
 const flipTriggerTimeoutFlag = ref(false)
+
+// Need the index to hide this card if another card is flipped
+const index = getCurrentInstance().vnode.key
+
+// Define the event that we send to the parent when we trigger flipping this card
 const emit = defineEmits("updateFlipTriggerIndex")
 
+// Function for when we click on a card
 const activateFlipTrigger = () => {
+  // Timeout flag flipped to show
   flipTriggerTimeoutFlag.value = false
+
+  // Send this index to the parent as flipped to close the rest of the cards
   emit("updateFlipTriggerIndex", index)
+
+  // Set the timeout so that we don't keep it open for more than 3 seconds
+  // Using this value makes sure that it's always three seconds from the most recent click, not from an old click
   flipTriggerTimeout.value = Date.now()
+
   // eslint-disable-next-line no-unused-vars
   var flipTriggerTimer = setTimeout(() => {
+    // We don't just want to set a timeout tho, we just want to re compute showFlipTrigger after 3 seconds
+    // If we just use the timeout we risk closing it too soon as someone flips back and forth between cards
+    // and the timeout is still active and closes it on them
     flipTriggerTimeoutFlag.value = flipTriggerTimeoutFlag.value = true
   }, 3000)
 }
 
 const showFlipTrigger = computed(() => {
   return (
-    props.flipTriggerIndex == index &&
-    Date.now() - flipTriggerTimeout.value < 3 &&
-    !flipTriggerTimeoutFlag.value
+    props.flipTriggerIndex == index && // Make sure this card is the last one clicked
+    Date.now() - flipTriggerTimeout.value < 3 && // That it hasn't been open for more than 3 seconds
+    !flipTriggerTimeoutFlag.value // And this is for reactivity because computed won't update with Date.now() alone
   )
 })
+
+// Redirect to bot invite link
+const addBot = () => {
+  window.open(props.bot.url, "_blank")
+}
 </script>
 
 <style scoped>
@@ -156,16 +179,19 @@ button {
 }
 
 p.name {
+  /* Calculating font size based on how many bots there are */
   font-size: calc(4rem - calc(0.25rem * var(--total)));
 }
 
 button {
+  /* Calculating font size based on how many bots there are */
   font-size: calc(3.5rem - calc(0.25rem * var(--total)));
 }
 
 p.desc {
   color: white;
   font-family: "SpecialElite";
+  /* Calculating font size based on how many bots there are */
   font-size: calc(2.25rem - calc(0.15rem * var(--total)));
   margin: 0;
 }
@@ -193,6 +219,7 @@ button:active {
 /* Transition in */
 .fade-enter-active {
   transition: all 1.5s ease;
+  /* Delay based on which index the bot card is so they fade in one after another */
   transition-delay: calc(1s + calc(0.5s * var(--index)));
 }
 .fade-enter-from {
