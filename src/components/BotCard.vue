@@ -116,9 +116,7 @@ const addBot = () => {
   position: relative;
   text-align: center;
   transition: transform 0.8s;
-  -webkit-transition: transform 0.8s;
   transform-style: preserve-3d;
-  -webkit-tranform-style: preserve-3d;
   width: 100%;
 }
 
@@ -132,7 +130,6 @@ img {
 /* Do an horizontal flip when you move the mouse over the flip box container */
 .flip-card:hover .flip-card-inner {
   transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg);
 }
 
 /* FLIP TRIGGER FOR MOBILE */
@@ -140,13 +137,13 @@ img {
 /* Position the front and back side */
 .flip-card-front,
 .flip-card-back {
+  -webkit-backface-visibility: hidden; /* Safari */
   backface-visibility: hidden;
   background-color: #04092b;
   border-radius: 5%;
   height: 100%;
   position: absolute;
   width: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
 }
 
 /* Style the front side (fallback if image is missing) */
@@ -170,7 +167,6 @@ img {
   justify-content: space-between;
   padding: 3vh;
   transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg);
   width: 100%;
 }
 
@@ -213,22 +209,18 @@ button:hover {
   box-shadow: -5px -5px 5px 0px rgba(255, 255, 255, 0.763);
   cursor: pointer;
   transform: translate(2.5px, 2.5px);
-  -webkit-transform: translate(2.5px, 2.5px);
 }
 
 button:active {
   box-shadow: none;
   transform: none;
-  -webkit-transform: none;
 }
 
 /* Transition in */
 .fade-enter-active {
   transition: all 1.5s ease;
-  -webkit-transition: all 1.5s ease;
   /* Delay based on which index the bot card is so they fade in one after another */
   transition-delay: calc(1s + calc(0.5s * var(--index)));
-  -webkit-transition-delay: calc(1s + calc(0.5s * var(--index)));
 }
 .fade-enter-from {
   opacity: 0;
@@ -255,7 +247,6 @@ button:active {
 @media only screen and (max-width: 1250px) {
   .mobile-flip-trigger {
     transform: rotateY(180deg);
-    -webkit-transform: rotateY(180deg);
   }
 }
 
