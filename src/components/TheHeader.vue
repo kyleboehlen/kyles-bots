@@ -134,7 +134,7 @@ a:hover > svg {
 }
 
 .write-enter-active {
-  transition: width 1.5s ease;
+  transition: width 2.5s;
 }
 
 .write-enter-from {
