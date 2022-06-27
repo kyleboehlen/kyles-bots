@@ -9,18 +9,14 @@
         '--desktop-height': height + 'vw',
       }"
     >
-      <div
-        class="flip-card-inner"
-        @click="activateFlipTrigger"
-        :class="{ 'mobile-flip-trigger': showFlipTrigger }"
-      >
+      <div class="flip-card-inner">
         <div class="flip-card-front">
           <img :src="assetUrl + props.bot.img" alt="Bot Logo" />
         </div>
         <div class="flip-card-back">
           <p class="name">{{ props.bot.name }}</p>
           <p class="desc">{{ props.bot.desc }}</p>
-          <button @click="addBot">Add Bot</button>
+          <a :href="props.bot.url" target="_blank">Add Bot</a>
         </div>
       </div>
     </div>
@@ -28,14 +24,7 @@
 </template>
 
 <script setup>
-import {
-  defineProps,
-  inject,
-  computed,
-  ref,
-  getCurrentInstance,
-  defineEmits,
-} from "vue"
+import { defineProps, inject, computed, getCurrentInstance } from "vue"
 
 // Get the bot details, the total number of bots, and the index of which bot card is flipped on mobile
 const props = defineProps(["bot", "total", "flipTriggerIndex"])
@@ -55,49 +44,8 @@ const height = computed(() => {
   return maxHeight
 })
 
-// Refs for handling mobile card flipping
-const flipTriggerTimeout = ref(true)
-const flipTriggerTimeoutFlag = ref(false)
-
 // Need the index to hide this card if another card is flipped
 const index = getCurrentInstance().vnode.key
-
-// Define the event that we send to the parent when we trigger flipping this card
-const emit = defineEmits("updateFlipTriggerIndex")
-
-// Function for when we click on a card
-const activateFlipTrigger = () => {
-  // Timeout flag flipped to show
-  flipTriggerTimeoutFlag.value = false
-
-  // Send this index to the parent as flipped to close the rest of the cards
-  emit("updateFlipTriggerIndex", index)
-
-  // Set the timeout so that we don't keep it open for more than 3 seconds
-  // Using this value makes sure that it's always three seconds from the most recent click, not from an old click
-  flipTriggerTimeout.value = Date.now()
-
-  // eslint-disable-next-line no-unused-vars
-  var flipTriggerTimer = setTimeout(() => {
-    // We don't just want to set a timeout tho, we just want to re compute showFlipTrigger after 3 seconds
-    // If we just use the timeout we risk closing it too soon as someone flips back and forth between cards
-    // and the timeout is still active and closes it on them
-    flipTriggerTimeoutFlag.value = flipTriggerTimeoutFlag.value = true
-  }, 3000)
-}
-
-const showFlipTrigger = computed(() => {
-  return (
-    props.flipTriggerIndex == index && // Make sure this card is the last one clicked
-    Date.now() - flipTriggerTimeout.value < 3 && // That it hasn't been open for more than 3 seconds
-    !flipTriggerTimeoutFlag.value // And this is for reactivity because computed won't update with Date.now() alone
-  )
-})
-
-// Redirect to bot invite link
-const addBot = () => {
-  window.open(props.bot.url, "_blank")
-}
 </script>
 
 <style scoped>
@@ -115,8 +63,9 @@ const addBot = () => {
   height: 100%;
   position: relative;
   text-align: center;
-  transition: transform 0.8s;
+  transition: transform 1s;
   transform-style: preserve-3d;
+  transform: rotateY(-180deg) translateZ(0);
   width: 100%;
 }
 
@@ -129,7 +78,9 @@ img {
 
 /* Do an horizontal flip when you move the mouse over the flip box container */
 .flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
+  -webkit-backface-visibility: hidden;
+  transform: rotateY(0deg);
+  backface-visibility: hidden;
 }
 
 /* FLIP TRIGGER FOR MOBILE */
@@ -137,7 +88,7 @@ img {
 /* Position the front and back side */
 .flip-card-front,
 .flip-card-back {
-  -webkit-backface-visibility: hidden; /* Safari */
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   background-color: #04092b;
   border-radius: 5%;
@@ -151,6 +102,7 @@ img {
   background-color: #04092b;
   border-radius: 5%;
   color: black;
+  transform: rotateY(180deg);
 }
 
 /* Style the back side */
@@ -166,16 +118,16 @@ img {
   height: 100%;
   justify-content: space-between;
   padding: 3vh;
-  transform: rotateY(180deg);
   width: 100%;
 }
 
 /* Text */
 p.name,
-button {
+a {
   color: #00ffff;
   font-family: "Electrolize";
   margin: 0;
+  text-decoration: none;
 }
 
 p.name {
@@ -183,7 +135,7 @@ p.name {
   font-size: calc(4rem - calc(0.25rem * var(--total)));
 }
 
-button {
+a {
   /* Calculating font size based on how many bots there are */
   font-size: calc(3.5rem - calc(0.25rem * var(--total)));
 }
@@ -196,7 +148,7 @@ p.desc {
   margin: 0;
 }
 
-button {
+a {
   background-color: #04092b;
   border-radius: 10px;
   border: 2px solid white;
@@ -205,13 +157,13 @@ button {
   width: 80%;
 }
 
-button:hover {
+a:hover {
   box-shadow: -5px -5px 5px 0px rgba(255, 255, 255, 0.763);
   cursor: pointer;
   transform: translate(2.5px, 2.5px);
 }
 
-button:active {
+a:active {
   box-shadow: none;
   transform: none;
 }
@@ -235,18 +187,12 @@ button:active {
     font-size: calc(3.25rem - calc(0.25rem * var(--total)));
   }
 
-  button {
+  a {
     font-size: calc(2.5rem - calc(0.25rem * var(--total)));
   }
 
   p.desc {
     font-size: calc(2rem - calc(0.15rem * var(--total)));
-  }
-}
-
-@media only screen and (max-width: 1250px) {
-  .mobile-flip-trigger {
-    transform: rotateY(180deg);
   }
 }
 
@@ -258,7 +204,7 @@ button:active {
     font-size: calc(3rem - calc(0.25rem * var(--total)));
   }
 
-  button {
+  a {
     font-size: calc(2.25rem - calc(0.25rem * var(--total)));
   }
 
