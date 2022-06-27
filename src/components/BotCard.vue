@@ -103,6 +103,7 @@ img {
   border-radius: 5%;
   color: black;
   transform: rotateY(180deg);
+  z-index: 10;
 }
 
 /* Style the back side */
