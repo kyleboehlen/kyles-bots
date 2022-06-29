@@ -8,8 +8,14 @@ The splash page for my Discord bot projects. The only real point of these bots i
 
 [Disney Bot](https://github.com/kyleboehlen/disney-bot)
 
-### Compile and Minify for Production
+## Compile and Minify for Production
 
 ```sh
 npm run build
 ```
+
+## Deployment
+
+Deploying the bots is handled by the [Bots Deploy](https://github.com/kyleboehlen/bots-deploy) repository that specifies the configuration and hooks for an AWS Elastic Beanstalk enviroment. After updating the bots you just run the Release Changes on the Code Pipeline for the production-bots
+
+The Vue splash page is served from AWS Amplify and will automatically run it's pipeline whenever you push to `master`
